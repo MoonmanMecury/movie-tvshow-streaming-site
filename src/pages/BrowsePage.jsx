@@ -32,6 +32,8 @@ const BrowsePage = () => {
       style={{ backgroundColor: timeTheme.color }}
     >
       <Nav />
+
+      {/* Background Ambient Glows */}
       <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-700" style={{ opacity: scrollOpacity }}>
         <div className="absolute top-[20%] -left-20 w-[600px] h-[600px] rounded-full blur-[150px] animate-pulse" style={{ backgroundColor: timeTheme.glow }} />
         <div className="absolute bottom-[10%] -right-20 w-[800px] h-[800px] rounded-full blur-[180px]" style={{ backgroundColor: timeTheme.glow, animationDelay: '2s' }} />
@@ -39,11 +41,16 @@ const BrowsePage = () => {
 
       <div className="relative z-10">
         <Banner />
+
+        {/* THE FIX: 
+            mt-4: Adds space on mobile so Row 1 sits BELOW the Play button.
+            md:-mt-24: Pulls the row UP on Desktop for that cinematic overlap.
+        */}
         <motion.div 
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 1 }}
-          className="relative -mt-24 z-20 pb-32"
+          className="relative mt-4 md:-mt-24 z-20 pb-32"
         >
           <Row title="April Originals" fetchUrl={requests.fetchNetflixOriginals} />
           <Row title="Trending Now" fetchUrl={requests.fetchTrending} />
@@ -54,8 +61,10 @@ const BrowsePage = () => {
         </motion.div>
       </div>
 
-      <footer className="relative z-10 p-20 text-center border-t border-white/5 bg-black/40 backdrop-blur-md">
-        <p className="text-gray-700 text-[9px] tracking-[0.6em] uppercase font-black">Curated Cinema • April Stream 2025</p>
+      <footer className="relative z-10 p-10 md:p-20 text-center border-t border-white/5 bg-black/40 backdrop-blur-md">
+        <p className="text-gray-700 text-[7px] md:text-[9px] tracking-[0.4em] md:tracking-[0.6em] uppercase font-black">
+          Curated Cinema • April Stream 2025
+        </p>
       </footer>
     </motion.div>
   );
