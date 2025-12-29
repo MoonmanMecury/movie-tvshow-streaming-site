@@ -65,7 +65,7 @@ const LoginPage = ({ initialMode = 'login' }) => {
           APRIL <span className="text-brand-red">STREAM</span>
         </h1>
         <div className="max-w-xl">
-           <h2 className="text-7xl font-black text-white uppercase leading-[0.85] tracking-tighter italic">
+           <h2 className="text-5xl lg:text-7xl font-black text-white uppercase leading-[0.85] tracking-tighter italic">
             Watch Everything. <br /> Feel <span className="text-brand-red">Nothing</span> Less.
           </h2>
         </div>
@@ -74,9 +74,9 @@ const LoginPage = ({ initialMode = 'login' }) => {
         </div>
       </div>
 
-      {/* RIGHT SIDE: The Form */}
-      <div className="w-full lg:w-2/5 relative z-20 flex items-center justify-center p-6">
-        <div className="glass w-full max-w-md p-10 md:p-14 rounded-[40px] border border-white/10 shadow-2xl backdrop-blur-3xl">
+      {/* RIGHT SIDE: The Form some thing has changed*/}
+      <div className="w-full lg:w-2/5 relative z-20 flex items-center justify-center p-4 md:p-10">
+        <div className="glass w-full max-w-md p-6 md:p-14 rounded-3xl md:rounded-[40px]. border border-white/10 shadow-2xl backdrop-blur-3xl">
           <header className="mb-10">
             <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">
               {mode === 'signup' ? 'Create Account' : mode === 'forgot' ? 'Recover Vault' : 'Welcome Back'}

@@ -25,17 +25,17 @@ const LandingPage = () => {
           className="absolute top-[-20%] left-[-10%] w-[80vw] h-[80vw] bg-brand-red/5 rounded-full blur-[120px]" 
         />
       </div>
-
+{/*changes made here*/}
       <div className="relative z-20 text-center select-none group">
         <motion.h1 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="text-7xl md:text-9xl font-black italic tracking-tighter text-white uppercase"
+          className="text-5xl md:text-9xl font-black italic tracking-tighter text-white uppercase"
         >
           APRIL <span className="text-brand-red">STREAM</span>
         </motion.h1>
-        <p className="mt-6 text-[10px] tracking-[0.8em] text-gray-500 uppercase font-black animate-pulse">
+        <p className="mt-6 text-[10px] tracking-[0.3em] md:tracking-[0.8em] text-gray-500 uppercase font-black animate-pulse">
           Click to dissolve into cinema
         </p>
       </div>
