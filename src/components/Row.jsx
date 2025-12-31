@@ -8,7 +8,6 @@ const Row = ({ title, fetchUrl }) => {
   const [movies, setMovies] = useState([]);
   const [showArrows, setShowArrows] = useState(false);
   const [myListIds, setMyListIds] = useState(new Set());
-  // ADDED: Track which movie is "active" (tapped) on mobile
   const [activeMovieId, setActiveMovieId] = useState(null); 
   const rowRef = useRef(null);
   const navigate = useNavigate();
@@ -51,6 +50,7 @@ const Row = ({ title, fetchUrl }) => {
     }
   };
 
+  // UPDATED: Navigation logic for the Watcher
   const handleWatch = (movie) => {
     const type = movie.media_type || (movie.first_air_date ? 'tv' : 'movie');
     navigate(`/watch/${type}/${movie.id}`);
@@ -89,21 +89,19 @@ const Row = ({ title, fetchUrl }) => {
         {title}
       </h2>
 
-      {/* Navigation Arrows (Desktop Only) */}
       <button 
         onClick={() => slide('left')} 
-        className={`hidden md:flex absolute left-0 top-[140px] z-[60] h-32 w-12 glass items-center justify-center rounded-r-xl transition-all duration-300 ${showArrows ? "opacity-100" : "opacity-0 -translate-x-full"}`}
+        className={`hidden md:flex absolute left-0 top-[140px] z-[60] h-32 w-12 bg-black/50 backdrop-blur-md items-center justify-center rounded-r-xl transition-all duration-300 ${showArrows ? "opacity-100" : "opacity-0 -translate-x-full"}`}
       >
         ‹
       </button>
       <button 
         onClick={() => slide('right')} 
-        className={`hidden md:flex absolute right-8 top-[140px] z-[60] h-32 w-12 glass items-center justify-center rounded-l-xl transition-all duration-300 ${showArrows ? "opacity-100" : "opacity-0 translate-x-full"}`}
+        className={`hidden md:flex absolute right-8 top-[140px] z-[60] h-32 w-12 bg-black/50 backdrop-blur-md items-center justify-center rounded-l-xl transition-all duration-300 ${showArrows ? "opacity-100" : "opacity-0 translate-x-full"}`}
       >
         ›
       </button>
 
-      {/* Row Container */}
       <div 
         ref={rowRef} 
         className="flex overflow-x-scroll py-2 md:py-4 no-scrollbar gap-2 md:gap-4 scroll-smooth"
@@ -115,18 +113,16 @@ const Row = ({ title, fetchUrl }) => {
           return (
             <div 
               key={movie.id} 
-              // UPDATED: Logic to toggle the overlay on mobile without navigating
               onClick={() => setActiveMovieId(isActive ? null : movie.id)}
               className="relative flex-none transition-all duration-700 md:hover:scale-110 md:hover:z-50 group/item w-[31%] md:w-56"
             >
               <img
                 className={`rounded-lg md:rounded-xl cursor-pointer object-cover shadow-2xl transition-all duration-300 h-auto md:h-80 w-full border border-white/5 
-                  ${isActive ? 'brightness-100 ring-2 ring-brand-red' : 'brightness-90 md:brightness-75 md:group-hover/item:brightness-100'}`}
+                  ${isActive ? 'brightness-100 ring-2 ring-red-600' : 'brightness-90 md:brightness-75 md:group-hover/item:brightness-100'}`}
                 src={getImagePath(movie.poster_path)}
                 alt={movie?.title || movie?.name}
               />
 
-              {/* ACTION OVERLAY: Triggers on isActive (mobile) OR group-hover (desktop) */}
               <div className={`absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent transition-all duration-300 rounded-lg md:rounded-xl flex flex-col justify-end p-2 md:p-4
                 ${isActive ? 'opacity-100' : 'opacity-0 md:group-hover/item:opacity-100'}`}
               >
@@ -136,11 +132,10 @@ const Row = ({ title, fetchUrl }) => {
                   
                   <button 
                     onClick={(e) => {
-                      // STOP the click from bubbling to the parent "setActiveMovieId"
                       e.stopPropagation(); 
                       handleWatch(movie);
                     }}
-                    className="bg-white text-black py-2 md:py-3 rounded-md md:rounded-lg flex items-center justify-center gap-1 md:gap-2 hover:bg-brand-red hover:text-white transition-all shadow-xl active:scale-95"
+                    className="bg-white text-black py-2 md:py-3 rounded-md md:rounded-lg flex items-center justify-center gap-1 md:gap-2 hover:bg-red-600 hover:text-white transition-all shadow-xl active:scale-95"
                   >
                     <svg className="w-3 h-3 md:w-4 md:h-4 fill-current" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z"/>
@@ -150,14 +145,13 @@ const Row = ({ title, fetchUrl }) => {
 
                   <button 
                     onClick={(e) => {
-                      // STOP the click from bubbling to the parent
                       e.stopPropagation();
                       toggleMyList(e, movie);
                     }}
-                    className={`glass text-white py-2 md:py-3 rounded-md md:rounded-lg flex items-center justify-center transition-all active:scale-95 ${isSaved ? 'bg-brand-red/40 border-brand-red' : 'hover:bg-white/20 border-white/10'}`}
+                    className={`bg-white/10 backdrop-blur-md text-white py-2 md:py-3 rounded-md md:rounded-lg flex items-center justify-center transition-all active:scale-95 border ${isSaved ? 'bg-red-600/40 border-red-600' : 'hover:bg-white/20 border-white/10'}`}
                   >
                     {isSaved ? (
-                      <svg className="w-3 h-3 md:w-4 md:h-4 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 md:w-4 md:h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" />
                       </svg>
                     ) : (

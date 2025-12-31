@@ -26,6 +26,7 @@ function App() {
           <Route path="/signup" element={<LoginPage initialMode="signup" />} /> 
           <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/verify-success" element={<VerifySuccess />} />
+          <Route path="/watch/:type/:id" element={<WatchPage />} />
           
           
           {/* Protected Routes */}
