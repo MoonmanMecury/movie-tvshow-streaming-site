@@ -1,138 +1,165 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import tmdb, { getImagePath } from '../services/tmdb';
 import Nav from '../components/Nav';
 
-const Watchpage = () => {
+const WatchPage = () => {
   const { type, id } = useParams();
   const navigate = useNavigate();
   
-  // State for TV Show protocols
+  const [details, setDetails] = useState(null);
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
+  const [episodesList, setEpisodesList] = useState([]);
   const isSeries = type === 'tv';
 
-  // Construct the secure stream link
-  // Using vidsrc.to for a clean, fast connection
+  useEffect(() => {
+    async function fetchMainData() {
+      try {
+        const { data } = await tmdb.get(`/${type}/${id}`);
+        setDetails(data);
+      } catch (error) { console.error("Signal lost", error); }
+    }
+    fetchMainData();
+  }, [type, id]);
+
+  useEffect(() => {
+    if (isSeries) {
+      async function fetchSeasonData() {
+        try {
+          const { data } = await tmdb.get(`/tv/${id}/season/${season}`);
+          setEpisodesList(data.episodes);
+        } catch (e) { console.error("Sequence blocked"); }
+      }
+      fetchSeasonData();
+    }
+  }, [id, season, isSeries]);
+
   const streamUrl = isSeries 
-    ? `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`
+    ? `https://vidsrc.to/embed/tv/${id}/${season}/${episode}` 
     : `https://vidsrc.to/embed/movie/${id}`;
 
   return (
-    <div className="min-h-screen bg-[#020000] text-white selection:bg-red-600 overflow-x-hidden">
+    <div className="bg-[#050000] min-h-screen text-white selection:bg-red-600 overflow-x-hidden">
       <Nav />
       
-      {/* 1. ATMOSPHERIC BACKDROP */}
+      {/* 1. ATMOSPHERIC BACKDROP (The Glows) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[50vh] bg-red-600/5 blur-[120px] rounded-full opacity-60" />
+        {/* Top Center Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[40vh] bg-red-600/10 blur-[120px] rounded-full opacity-50" />
+        {/* Side Accent */}
+        <div className="absolute bottom-0 right-0 w-[40vw] h-[40vh] bg-red-600/5 blur-[100px] rounded-full" />
       </div>
 
-      <main className="relative z-10 pt-20 md:pt-28 pb-20">
+      <main className="relative z-10 pt-20 md:pt-28 px-4 md:px-8 max-w-[1300px] mx-auto pb-20">
         
-        {/* THE PLAYER ENGINE */}
-        <section className="w-full max-w-[1440px] mx-auto px-0 md:px-6 lg:px-12">
+        {/* COMPACT PLAYER ENGINE */}
+        <div className="w-full space-y-10">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative w-full aspect-video bg-black shadow-[0_0_100px_rgba(0,0,0,0.8)] md:rounded-[32px] overflow-hidden border border-white/5"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative glass rounded-[24px] md:rounded-[40px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] aspect-video border border-white/10 bg-black/40 backdrop-blur-sm"
           >
-            <iframe
-              src={streamUrl}
-              className="absolute inset-0 w-full h-full"
-              allowFullScreen
-              frameBorder="0"
-              title="Noir Protocol Stream"
+            <iframe 
+              src={streamUrl} 
+              className="absolute inset-0 w-full h-full" 
+              allowFullScreen 
+              title="Noir Player" 
             />
           </motion.div>
-        </section>
 
-        {/* METADATA & CONTROL PANEL */}
-        <section className="max-w-[1440px] mx-auto px-6 md:px-12 mt-12 md:mt-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* INFORMATION & CONTROLS GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 px-2">
             
-            {/* LEFT: Identity & Selectors */}
-            <div className="lg:col-span-8 space-y-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
+            {/* LEFT: Metadata & Identity */}
+            <div className={`space-y-6 ${isSeries ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center gap-4">
                   <span className="bg-red-600/10 border border-red-600/20 text-red-600 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">
-                    Uplink Active
+                    Signal Locked
                   </span>
                   <span className="text-gray-600 text-[9px] font-black uppercase tracking-[0.4em]">
-                    Mode: {isSeries ? 'Series' : 'Feature'} // ID: {id}
+                    {details?.release_date?.split('-')[0] || details?.first_air_date?.split('-')[0]} // {details?.runtime || details?.number_of_seasons} units
                   </span>
                 </div>
                 
-                <h1 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none">
-                  Live <span className="text-red-600 text-glow">Transmission</span>
+                <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
+                  {details?.title || details?.name} <span className="text-red-600 drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]">.</span>
                 </h1>
-              </div>
+              </motion.div>
+              
+              <p className="text-gray-400 text-sm md:text-lg leading-relaxed max-w-3xl font-medium">
+                {details?.overview}
+              </p>
 
-              {/* EPISODE SELECTOR (Only shows for TV) */}
-              {isSeries && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-wrap gap-6 p-8 bg-white/[0.02] border border-white/5 rounded-[32px] backdrop-blur-md"
+              {/* ACTIONS: Secure to Vault / Return */}
+              <div className="flex flex-wrap gap-4 pt-4">
+                <button className="flex-1 md:flex-none px-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-red-600 hover:text-white transition-all shadow-xl active:scale-95">
+                  Secure to Vault
+                </button>
+                <button 
+                  onClick={() => navigate('/browse')}
+                  className="flex-1 md:flex-none px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/10 transition-all"
                 >
-                  <div className="space-y-3">
-                    <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">Protocol (Season)</label>
+                  Return to Base
+                </button>
+              </div>
+            </div>
+
+            {/* RIGHT: Series Navigation Hub */}
+            {isSeries && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="lg:col-span-4"
+              >
+                <div className="bg-white/[0.03] backdrop-blur-xl p-6 md:p-8 rounded-[32px] border border-white/10 shadow-2xl">
+                  <div className="mb-8">
+                    <label className="text-[9px] uppercase tracking-[0.4em] text-gray-500 font-black mb-4 block">Protocol (Season)</label>
                     <div className="relative">
                       <select 
                         value={season}
-                        onChange={(e) => setSeason(e.target.value)}
-                        className="bg-black border border-white/10 px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest outline-none focus:border-red-600 transition-all appearance-none cursor-pointer pr-12"
+                        onChange={(e) => { setSeason(e.target.value); setEpisode(1); }}
+                        className="w-full bg-black/60 border border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase tracking-widest outline-none focus:border-red-600 appearance-none cursor-pointer transition-colors"
                       >
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Level {s}</option>)}
+                        {[...Array(details?.number_of_seasons)].map((_, i) => (
+                          <option key={i+1} value={i+1} className="bg-[#050000]">Season {i+1}</option>
+                        ))}
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">▼</div>
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-red-600 text-[10px]">▼</div>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">Sequence (Episode)</label>
-                    <input 
-                      type="number"
-                      min="1"
-                      value={episode}
-                      onChange={(e) => setEpisode(e.target.value)}
-                      className="bg-black border border-white/10 px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest outline-none focus:border-red-600 transition-all w-32"
-                    />
+                  <div>
+                    <label className="text-[9px] uppercase tracking-[0.4em] text-gray-500 font-black mb-4 block">Sequence (Episode)</label>
+                    <div className="grid grid-cols-4 lg:grid-cols-1 gap-2 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                      {episodesList.map((ep) => (
+                        <button 
+                          key={ep.id}
+                          onClick={() => setEpisode(ep.episode_number)}
+                          className={`p-4 rounded-xl border text-[10px] font-black transition-all flex items-center justify-center lg:justify-start ${episode === ep.episode_number ? 'border-red-600 bg-red-600/20 text-white shadow-[0_0_20px_rgba(220,38,38,0.2)]' : 'border-white/5 bg-white/5 text-gray-500 hover:text-white hover:bg-white/10'}`}
+                        >
+                          <span className={`${episode === ep.episode_number ? 'text-red-600' : 'text-gray-700'} lg:mr-4`}>
+                            {ep.episode_number.toString().padStart(2, '0')}
+                          </span>
+                          <span className="hidden lg:inline truncate opacity-80">{ep.name}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </motion.div>
-              )}
-            </div>
-
-            {/* RIGHT: System Actions */}
-            <div className="lg:col-span-4 space-y-6">
-              <div className="bg-white/[0.03] backdrop-blur-3xl p-8 md:p-10 rounded-[40px] border border-white/5 shadow-2xl">
-                <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-gray-600 mb-8 flex items-center gap-4">
-                  Actions <div className="flex-1 h-[1px] bg-white/5" />
-                </h3>
-                
-                <div className="space-y-4">
-                  <button className="w-full py-5 bg-white text-black font-black uppercase text-[10px] tracking-[0.3em] rounded-2xl hover:bg-red-600 hover:text-white transition-all transform active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
-                    Secure to Vault
-                  </button>
-                  
-                  <button 
-                    onClick={() => navigate('/browse')}
-                    className="w-full py-5 bg-transparent border border-white/10 text-white font-black uppercase text-[10px] tracking-[0.3em] rounded-2xl hover:bg-white/5 transition-all"
-                  >
-                    Return to Base
-                  </button>
                 </div>
-              </div>
-
-              <p className="text-[8px] text-center text-gray-800 uppercase tracking-[0.6em] px-10 leading-loose font-bold">
-                Warning: Unauthorized distribution of this signal will terminate clearance.
-              </p>
-            </div>
-
+              </motion.div>
+            )}
           </div>
-        </section>
+        </div>
       </main>
     </div>
   );
 };
 
-export default Watchpage;
+export default WatchPage;
