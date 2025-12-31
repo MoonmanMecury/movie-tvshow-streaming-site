@@ -20,8 +20,11 @@ const LoginPage = ({ initialMode = 'login' }) => {
         email, 
         password,
         options: { 
-          // This tells Supabase to send the user to our new page after they click the link
-          emailRedirectTo: `${window.location.origin}/verify-success` 
+          // 1. Check if we are on Vercel or Local
+          // 2. Use the exact string that matches your Supabase 'Redirect URL' list
+          emailRedirectTo: window.location.hostname === 'localhost' 
+            ? 'http://localhost:5173/verify-success' 
+            : 'https://movie-tvshow-streaming-site-hassan-kasakas-projects.vercel.app/verify-success'
         }
       });
       
