@@ -20,11 +20,11 @@ const LoginPage = ({ initialMode = 'login' }) => {
         email, 
         password,
         options: { 
-          // 1. Check if we are on Vercel or Local
+          // 1. Check if we are on Vercel or Local 
           // 2. Use the exact string that matches your Supabase 'Redirect URL' list
           emailRedirectTo: window.location.hostname === 'localhost' 
             ? 'http://localhost:5173/verify-success' 
-            : 'https://movie-tvshow-streaming-site-hassan-kasakas-projects.vercel.app/verify-success'
+            : 'https://movie-tvshow-streaming-site-xfwf.vercel.app/verify-success'
         }
       });
       
