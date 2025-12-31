@@ -119,7 +119,7 @@ const WatchPage = () => {
                         className="w-full bg-black/60 border border-white/10 p-4 rounded-2xl text-[11px] font-black uppercase tracking-widest outline-none focus:border-red-600 appearance-none cursor-pointer"
                       >
                         {[...Array(details?.number_of_seasons)].map((_, i) => (
-                          <option key={i+1} value={i+1} className="bg-brand-black">Level {i+1}</option>
+                          <option key={i+1} value={i+1} className="bg-brand-black">Season {i+1}</option>
                         ))}
                       </select>
                       <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-red-600 text-[10px]">▼</div>
