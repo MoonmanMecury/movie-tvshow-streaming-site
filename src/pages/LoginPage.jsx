@@ -17,16 +17,13 @@ const LoginPage = ({ initialMode = 'login' }) => {
     try {
       if (mode === 'signup') {
       const { error } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: { 
-          // 1. Check if we are on Vercel or Local 
-          // 2. Use the exact string that matches your Supabase 'Redirect URL' list
-          emailRedirectTo: window.location.hostname === 'localhost' 
-            ? 'http://localhost:5173/verify-success' 
-            : 'https://movie-tvshow-streaming-site-xfwf.vercel.app/verify-success'
-        }
-      });
+      email, 
+      password,
+      options: { 
+    // Use the EXACT URL that you just verified manually
+    emailRedirectTo: 'https://movie-tvshow-streaming-site-xfwf.vercel.app/verify-success'
+  }
+});
       
       if (error) throw error;
       
