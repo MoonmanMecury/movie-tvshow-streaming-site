@@ -16,15 +16,21 @@ const LoginPage = ({ initialMode = 'login' }) => {
 
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({ 
-          email, 
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/browse` }
-        });
-        if (error) throw error;
-        alert("Verification link sent! Check your inbox to activate your vault.");
-        setMode('login');
-      } 
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: { 
+          // This tells Supabase to send the user to our new page after they click the link
+          emailRedirectTo: `${window.location.origin}/verify-success` 
+        }
+      });
+      
+      if (error) throw error;
+      
+      // Notify the user to check their inbox
+      alert("Transmission Sent. Check your inbox to verify your identity.");
+      setMode('login'); 
+    }
       else if (mode === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;

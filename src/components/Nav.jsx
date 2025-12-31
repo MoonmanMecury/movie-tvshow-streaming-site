@@ -101,7 +101,7 @@ const Nav = () => {
             alt="User"
           />
           
-          {/* Dropdown Menu (Now Tap-Controlled) */}
+          {/* Dropdown Menu */}
           <AnimatePresence>
             {isMenuOpen && (
               <motion.div 
@@ -114,9 +114,16 @@ const Nav = () => {
                    <p className="text-[8px] uppercase tracking-widest text-gray-500 font-bold">Identified As</p>
                    <p className="text-[10px] text-white truncate font-black">{user?.email}</p>
                 </div>
+
+                {/* --- ADDED PROFILE LINK HERE --- */}
+                <button onClick={() => {navigate('/profile'); setIsMenuOpen(false);}} className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 rounded-xl transition-colors">
+                  Dossier (Profile)
+                </button>
+
                 <button onClick={() => {navigate('/my-list'); setIsMenuOpen(false);}} className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 rounded-xl transition-colors">
                   The Vault
                 </button>
+                
                 <button onClick={signOut} className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-brand-red hover:bg-brand-red/10 rounded-xl transition-colors mt-1">
                   Terminate Session
                 </button>

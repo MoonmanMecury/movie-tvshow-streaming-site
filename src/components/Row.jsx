@@ -8,6 +8,8 @@ const Row = ({ title, fetchUrl }) => {
   const [movies, setMovies] = useState([]);
   const [showArrows, setShowArrows] = useState(false);
   const [myListIds, setMyListIds] = useState(new Set());
+  // ADDED: Track which movie is "active" (tapped) on mobile
+  const [activeMovieId, setActiveMovieId] = useState(null); 
   const rowRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -108,24 +110,36 @@ const Row = ({ title, fetchUrl }) => {
       >
         {movies.map((movie) => {
           const isSaved = myListIds.has(movie.id);
+          const isActive = activeMovieId === movie.id;
           
           return (
             <div 
               key={movie.id} 
+              // UPDATED: Logic to toggle the overlay on mobile without navigating
+              onClick={() => setActiveMovieId(isActive ? null : movie.id)}
               className="relative flex-none transition-all duration-700 md:hover:scale-110 md:hover:z-50 group/item w-[31%] md:w-56"
             >
               <img
-                className="rounded-lg md:rounded-xl cursor-pointer object-cover shadow-2xl transition-all duration-300 h-auto md:h-80 w-full brightness-90 md:brightness-75 md:group-hover/item:brightness-100 border border-white/5"
+                className={`rounded-lg md:rounded-xl cursor-pointer object-cover shadow-2xl transition-all duration-300 h-auto md:h-80 w-full border border-white/5 
+                  ${isActive ? 'brightness-100 ring-2 ring-brand-red' : 'brightness-90 md:brightness-75 md:group-hover/item:brightness-100'}`}
                 src={getImagePath(movie.poster_path)}
                 alt={movie?.title || movie?.name}
               />
 
-              {/* ACTION OVERLAY */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent opacity-0 md:group-hover/item:opacity-100 transition-all duration-300 rounded-lg md:rounded-xl flex flex-col justify-end p-2 md:p-4">
-                <div className="flex flex-col gap-1 md:gap-2 transform md:translate-y-4 md:group-hover/item:translate-y-0 transition-transform duration-500">
+              {/* ACTION OVERLAY: Triggers on isActive (mobile) OR group-hover (desktop) */}
+              <div className={`absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent transition-all duration-300 rounded-lg md:rounded-xl flex flex-col justify-end p-2 md:p-4
+                ${isActive ? 'opacity-100' : 'opacity-0 md:group-hover/item:opacity-100'}`}
+              >
+                <div className={`flex flex-col gap-1 md:gap-2 transform transition-transform duration-500 
+                  ${isActive ? 'translate-y-0' : 'md:translate-y-4 md:group-hover/item:translate-y-0'}`}
+                >
                   
                   <button 
-                    onClick={() => handleWatch(movie)}
+                    onClick={(e) => {
+                      // STOP the click from bubbling to the parent "setActiveMovieId"
+                      e.stopPropagation(); 
+                      handleWatch(movie);
+                    }}
                     className="bg-white text-black py-2 md:py-3 rounded-md md:rounded-lg flex items-center justify-center gap-1 md:gap-2 hover:bg-brand-red hover:text-white transition-all shadow-xl active:scale-95"
                   >
                     <svg className="w-3 h-3 md:w-4 md:h-4 fill-current" viewBox="0 0 24 24">
@@ -135,7 +149,11 @@ const Row = ({ title, fetchUrl }) => {
                   </button>
 
                   <button 
-                    onClick={(e) => toggleMyList(e, movie)}
+                    onClick={(e) => {
+                      // STOP the click from bubbling to the parent
+                      e.stopPropagation();
+                      toggleMyList(e, movie);
+                    }}
                     className={`glass text-white py-2 md:py-3 rounded-md md:rounded-lg flex items-center justify-center transition-all active:scale-95 ${isSaved ? 'bg-brand-red/40 border-brand-red' : 'hover:bg-white/20 border-white/10'}`}
                   >
                     {isSaved ? (
