@@ -1,14 +1,15 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import LandingPage from './pages/LandingPage';
-import BrowsePage from './pages/BrowsePage';
-import MyListPage from './pages/MyListPage';
-import PlayerPage from './pages/PlayerPage';
-import SearchPage from './pages/SearchPage';
-import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/ProfilePage'; 
-import VerifySuccess from './pages/VerifySuccess';
-import UpdatePasswordPage from './pages/UpdatePasswordPage';
+import LandingPage from './views/LandingPage';
+import BrowsePage from './views/BrowsePage';
+import MyListPage from './views/MyListPage';
+import PlayerPage from './views/PlayerPage';
+import SearchPage from './views/SearchPage';
+import LoginPage from './views/LoginPage';
+import ProfilePage from './views/ProfilePage'; 
+import Watchpage from './views/WatchPage';
+import VerifySuccess from './views/VerifySuccess';
+import UpdatePasswordPage from './views/UpdatePasswordPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthProvider';
 
@@ -26,7 +27,7 @@ function App() {
           <Route path="/signup" element={<LoginPage initialMode="signup" />} /> 
           <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/verify-success" element={<VerifySuccess />} />
-          <Route path="/watch/:type/:id" element={<WatchPage />} />
+          <Route path="/watch/:type/:id" element={<Watchpage />} />
           
           
           {/* Protected Routes */}

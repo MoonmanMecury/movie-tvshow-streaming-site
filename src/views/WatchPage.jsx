@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Nav from '../components/Nav';
 
-const WatchPage = () => {
+const Watchpage = () => {
   const { type, id } = useParams();
   const navigate = useNavigate();
   
@@ -135,4 +135,4 @@ const WatchPage = () => {
   );
 };
 
-export default WatchPage;
+export default Watchpage;
